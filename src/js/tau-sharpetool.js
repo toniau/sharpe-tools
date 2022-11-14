@@ -15,35 +15,52 @@ function SHARPEtools() {
 
     // Set up global vars
     this.imagesArray = [];
-    this.currentImage;
+    this.currentIndex;
     // IPG - Interactive Photo Gallery
     this.isIPG = false;
 
     // Function to init tool package
     this.render = () => {
         this.imagesArray = [];
-        this.currentImage = null;
+        this.currentIndex = 0;
         this.isIPG = false;
 
         // Grab all images and populate images array
-        document.querySelectorAll('img.sharpe-IPG').forEach((el, index) => {
+        document.querySelectorAll('.sharpe-ipg-grid__item').forEach((el, index) => {
             _this.imagesArray.push(el);
             el.setAttribute('data-ipg-index', index);
-
-            // Attach listeners to each image
-            el.addEventListener('hover', () => {
-                _this.hoverImage(el);
-            });
-            el.addEventListener('click', () => {
-                _this.clickImage(el);
-            });
         });
+		
+		// Create carousel navigation
+		let carouselNav = document.querySelector('.sharpe-ipg-text-carousel__nav');
+		for(let i=0; i < this.imagesArray.length; i++) {
+			let navDot = document.createElement('span');
+			navDot.classList.add('dot');
+			navDot.setAttribute('data-carousel-index', i);
+			carouselNav.append(navDot);
+			
+			// Attach click handler
+			navDot.addEventListener('click', (el) => {
+				// Remove past active classes
+				let lastDot = document.querySelector(`.dot[data-carousel-index="${_this.currentIndex}"]`);
+				lastDot.classList.remove('active-dot');
+				let lastImage = document.querySelector(`.sharpe-ipg-grid__item[data-ipg-index="${_this.currentIndex}"]`);
+				lastImage.classList.remove('active-image');
+				
+				// Get new index
+				_this.currentIndex = el.target.dataset.carouselIndex;
+				
+				// Mark active nav dot
+				el.target.classList.add('active-dot');
+				
+				// Transition corresponding image
+				_this.imagesArray[_this.currentIndex].classList.add('active-image');
+				
+			});
+		}
+		
+		// Trigger first image
+		document.querySelector('.dot[data-carousel-index="0"]').click();
     }
 
-    // Function - Hover interaction
-    this.hoverImage = _el => {
-        
-    }
-
-    // Function - Click interaction
 }
